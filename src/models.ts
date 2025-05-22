@@ -1,142 +1,136 @@
-class User {
-    constructor(public id: number, public name: string, public age: number){}
-}
-
-class Task {
-    constructor(
-        public id: number,
-        public title: string,
-        public assignedTo?: number  
-    ){}
-}
-
-class UserService {
-    private users: User[] =  [];
-    private generateID: number = 1;
-
-    createUser(name: string, age: number): User{
-        const user = new User(this.generateID++, name, age);
-        this.users.push(user);
-        return user;
+interface User {
+    id: number;
+    name: string;
+    email: string;
+  }
+  let users: User[] = [];
+  function createUser(user: User): void {
+    users.push(user);
+    console.log("User created:", user);
+  }
+  function getUserById(id: number): User | undefined {
+    return users.find(user => user.id === id);
+  }
+  
+  function getAllUsers(): User[] {
+    return users;
+  }
+  function updateUser(id: number, updatedFields: Partial<User>): void {
+    const user = users.find(user => user.id === id);
+    if (user) {
+      Object.assign(user, updatedFields);
+      console.log("User updated:", user);
+    } else {
+      console.log("User not found");
     }
+  }
+  function deleteUser(id: number): void {
+    users = users.filter(user => user.id !== id);
+    console.log("User deleted:", id);
+  }
+createUser({ id: 1, name: "Pius", email: "pius@example.com" });
+createUser({ id: 2, name: "Brian", email: "brian@example.com" });
 
-    getAllUsers(): User[]{
-        return this.users;
+// console.log(getUserById(1));
+// console.log(getAllUsers());
+// updateUser(1, { name: "Pius" });
+// deleteUser(2);
+
+//task code
+
+interface Task {
+    id: number;
+    title: string;
+  }
+  let tasks: Task[] = [];
+  function createTask(id:number,title: string): Task {
+    const newTask: Task = {
+      id, 
+      title,
+    };
+    tasks.push(newTask);
+    return newTask;
+  }
+  function getAllTasks(): Task[] {
+    return tasks;
+  }
+  
+  function getTaskById(id: number): Task | undefined {
+    return tasks.find(task => task.id === id);
+  }
+  function updateTask(id: number, newTitle: string): Task | null {
+    const task = tasks.find(task => task.id === id);
+    if (task) {
+      task.title = newTitle;
+      return task;
     }
+    return null;
+  }
+  function deleteTask(id: number): void {
+    const index = tasks.findIndex(task => task.id === id);
+      tasks.splice(index, 1);
+  }
+  const task1 = createTask(1,"analyze data");
+  const task2 = createTask(2,"clean data");
+  
+  console.log(getAllTasks());
+  
+  //const updated = updateTask(task1.id, "Learn TypeScript deeply");
+  // const deleted = deleteTask(task2.id);
+   console.log(getAllTasks());
 
-    getUserByID(id: number): User | undefined{
-        return this.users.find(user => user.id === id);
-    }
-
-    getUsersByAge(age: number): User[] | undefined {
-        return this.users.filter(user => user.age === age);
-    }
-
-    updateUser(id: number, updateDetails: {name: string, age: number}): boolean {
-        const user = this.getUserByID(id);
-        if(user) {
-            user.name = updateDetails.name;
-            user.age = updateDetails.age;
-            return true;
-        }
-        return false;
-    }
-
-    deleteUser(id: number): boolean{
-        const userIndex = this.users.findIndex(user => user.id === id);
-        if(userIndex !== -1){
-            this.users.splice(userIndex, 1);
-            return true;
-        }
-
-        return false;
-    }
-}
-
-class TaskService {
-    private tasks: Task[] = [];
-    private generateID: number = 1;
-
-    createTask(title: string): Task{
-        const task = new Task(this.generateID++, title);
-        this.tasks.push(task);
-        return task;
-    }
-
-    getAllTasks(): Task[]{
-        return this.tasks;
-    }
-
-    getTaskByID(id: number): Task | undefined {
-        const taskFound = this.tasks.find(task => task.id === id);
-        if(taskFound){
-            return {
-                id: taskFound.id,
-                title: taskFound.title,
-            }
-        }
-    }
-
-    updateTask(id: number, newTitle: string) : boolean {
-        const task = this.getTaskByID(id);
-        if (task) {
-          task.title = newTitle;
-          return true;
-        }
-        return false;
+   //ASSIGHNING TASK
+   class TaskAssigner {
+    private assignments: Map<number, number[]> = new Map(); 
+    // Map<userId, array of taskIds>
+  
+    assignTaskToUser(userId: number, taskId: number): void {
+      if (!getUserById(userId)) {
+        console.log(`User with id ${userId} does not exist.`);
+        return;
       }
-    
-      deleteTask(id: number): boolean {
-        const taskIndex = this.tasks.findIndex(task => task.id === id);
-        if (taskIndex !== -1) {
-          this.tasks.splice(taskIndex, 1);
-          return true;
-        }
-        return false;
+      if (!getTaskById(taskId)) {
+        console.log(`Task with id ${taskId} does not exist.`);
+        return;
       }
-    
-      assignTask(taskId: number, userId: number): boolean {
-        const task = this.getTaskByID(taskId);
-        if (task) {
-          task.assignedTo = userId;
-          return true;
-        }
-        return false;
+      const userTasks = this.assignments.get(userId) || [];
+      if (!userTasks.includes(taskId)) {
+        userTasks.push(taskId);
+        this.assignments.set(userId, userTasks);
+        console.log(`Assigned task ${taskId} to user ${userId}`);
+      } 
+      else {
+        console.log(`Task ${taskId} already assigned to user ${userId}`);
       }
-    
-      unassignTask(taskId: number): boolean {
-        const task = this.getTaskByID(taskId);
-        if (task) {
-          task.assignedTo = undefined;
-          return true;
-        }
-        return false;
+    }
+
+    getTasksForUser(userId: number): Task[] {
+      const taskIds = this.assignments.get(userId) || [];
+      return taskIds.map(id => getTaskById(id)!).filter(task => task !== undefined);
+    }
+  
+    unassignTaskFromUser(userId: number, taskId: number): void {
+      const userTasks = this.assignments.get(userId);
+      if (!userTasks) {
+        console.log(`User ${userId} has no tasks assigned.`);
+        return;
       }
-    
-      getTasksByUser(userId: number): Task[] {
-        return this.tasks.filter(task => task.assignedTo === userId);
-      }
-}
+      const index = userTasks.indexOf(taskId);
+      if (index > -1) {
+        userTasks.splice(index, 1);
+        this.assignments.set(userId, userTasks);
+        console.log(`Unassigned task ${taskId} from user ${userId}`);
 
+       }
+    }
+  }
+  
+  const taskAssigner = new TaskAssigner();
 
+taskAssigner.assignTaskToUser(1, 1);  // Assign task 1 to user 1
+taskAssigner.assignTaskToUser(2, 2);  // Assign task 2 to user 1
 
-const userService = new UserService();
+console.log(taskAssigner.getTasksForUser(1)); // List tasks assigned to user 1
 
-const user1 = userService.createUser("pius", 7);
-const user2 = userService.createUser("Brian", 24);
-const user3 = userService.createUser("Teresa", 19);
-const user4 = userService.createUser("Elon", 54);
-
-const taskService = new TaskService();
-
-const task1 = taskService.createTask("collect data");
-const task2 = taskService.createTask("organize and clean data");
-const task3 = taskService.createTask("Analyze the clean data");
-const task4 = taskService.createTask("do data visualization with tableau");
-
-
-console.info("All Users:", userService.getAllUsers());
-console.log("");
-console.info("All Tasks: ", taskService.getAllTasks())
-
-console.info("Tasks Assigned to: ", user1.name , "-", taskService.getTaskByID(user1.id));
+taskAssigner.unassignTaskFromUser(1, 2); // Remove task 2 from user 1
+console.log(taskAssigner.getTasksForUser(1)); // Check tasks again

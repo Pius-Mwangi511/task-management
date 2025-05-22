@@ -1,127 +1,87 @@
-var User = /** @class */ (function () {
-    function User(id, name, age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
+var users = [];
+function createUser(user) {
+    users.push(user);
+    console.log("User created:", user);
+}
+function getUserById(id) {
+    return users.find(function (user) { return user.id === id; });
+}
+function getAllUsers() {
+    return users;
+}
+function updateUser(id, updatedFields) {
+    var user = users.find(function (user) { return user.id === id; });
+    if (user) {
+        Object.assign(user, updatedFields);
+        console.log("User updated:", user);
     }
-    return User;
-}());
-var Task = /** @class */ (function () {
-    function Task(id, title, assignedTo) {
-        this.id = id;
-        this.title = title;
-        this.assignedTo = assignedTo;
+    else {
+        console.log("User not found");
     }
-    return Task;
-}());
-var UserService = /** @class */ (function () {
-    function UserService() {
-        this.users = [];
-        this.generateID = 1;
-    }
-    UserService.prototype.createUser = function (name, age) {
-        var user = new User(this.generateID++, name, age);
-        this.users.push(user);
-        return user;
-    };
-    UserService.prototype.getAllUsers = function () {
-        return this.users;
-    };
-    UserService.prototype.getUserByID = function (id) {
-        return this.users.find(function (user) { return user.id === id; });
-    };
-    UserService.prototype.getUsersByAge = function (age) {
-        return this.users.filter(function (user) { return user.age === age; });
-    };
-    UserService.prototype.updateUser = function (id, updateDetails) {
-        var user = this.getUserByID(id);
-        if (user) {
-            user.name = updateDetails.name;
-            user.age = updateDetails.age;
-            return true;
-        }
-        return false;
-    };
-    UserService.prototype.deleteUser = function (id) {
-        var userIndex = this.users.findIndex(function (user) { return user.id === id; });
-        if (userIndex !== -1) {
-            this.users.splice(userIndex, 1);
-            return true;
-        }
-        return false;
-    };
-    return UserService;
-}());
-var TaskService = /** @class */ (function () {
-    function TaskService() {
+}
+function deleteUser(id) {
+    users = users.filter(function (user) { return user.id !== id; });
+    console.log("User deleted:", id);
+}
+createUser({ id: 1, name: "Pius", email: "pius@example.com" });
+createUser({ id: 2, name: "Brian", email: "brian@example.com" });
+console.log(getUserById(1));
+console.log(getAllUsers());
+updateUser(1, { name: "Pius" });
+deleteUser(2);
+var TaskManager = /** @class */ (function () {
+    function TaskManager() {
         this.tasks = [];
-        this.generateID = 1;
+        this.nextId = 1;
     }
-    TaskService.prototype.createTask = function (title) {
-        var task = new Task(this.generateID++, title);
-        this.tasks.push(task);
-        return task;
+    // CREATE
+    TaskManager.prototype.createTask = function (title, description) {
+        var newTask = {
+            id: this.nextId++,
+            title: title,
+            description: description,
+            completed: false,
+        };
+        this.tasks.push(newTask);
+        return newTask;
     };
-    TaskService.prototype.getAllTasks = function () {
+    // READ (all tasks)
+    TaskManager.prototype.getAllTasks = function () {
         return this.tasks;
     };
-    TaskService.prototype.getTaskByID = function (id) {
-        var taskFound = this.tasks.find(function (task) { return task.id === id; });
-        if (taskFound) {
-            return {
-                id: taskFound.id,
-                title: taskFound.title,
-            };
-        }
+    // READ (single task)
+    TaskManager.prototype.getTaskById = function (id) {
+        return this.tasks.find(function (task) { return task.id === id; });
     };
-    TaskService.prototype.updateTask = function (id, newTitle) {
-        var task = this.getTaskByID(id);
-        if (task) {
-            task.title = newTitle;
-            return true;
-        }
-        return false;
+    // UPDATE
+    TaskManager.prototype.updateTask = function (id, updatedFields) {
+        var task = this.getTaskById(id);
+        if (!task)
+            return undefined;
+        Object.assign(task, updatedFields);
+        return task;
     };
-    TaskService.prototype.deleteTask = function (id) {
-        var taskIndex = this.tasks.findIndex(function (task) { return task.id === id; });
-        if (taskIndex !== -1) {
-            this.tasks.splice(taskIndex, 1);
-            return true;
-        }
-        return false;
+    // DELETE
+    TaskManager.prototype.deleteTask = function (id) {
+        var index = this.tasks.findIndex(function (task) { return task.id === id; });
+        if (index === -1)
+            return false;
+        this.tasks.splice(index, 1);
+        return true;
     };
-    TaskService.prototype.assignTask = function (taskId, userId) {
-        var task = this.getTaskByID(taskId);
-        if (task) {
-            task.assignedTo = userId;
-            return true;
-        }
-        return false;
-    };
-    TaskService.prototype.unassignTask = function (taskId) {
-        var task = this.getTaskByID(taskId);
-        if (task) {
-            task.assignedTo = undefined;
-            return true;
-        }
-        return false;
-    };
-    TaskService.prototype.getTasksByUser = function (userId) {
-        return this.tasks.filter(function (task) { return task.assignedTo === userId; });
-    };
-    return TaskService;
+    return TaskManager;
 }());
-var userService = new UserService();
-var user1 = userService.createUser("pius", 7);
-var user2 = userService.createUser("Brian", 24);
-var user3 = userService.createUser("Teresa", 19);
-var user4 = userService.createUser("Elon", 54);
-var taskService = new TaskService();
-var task1 = taskService.createTask("collect data");
-var task2 = taskService.createTask("organize and clean data");
-var task3 = taskService.createTask("Analyze the clean data");
-var task4 = taskService.createTask("do data visualization with tableau");
-console.info("All Users:", userService.getAllUsers());
-console.log("");
-console.info("All Tasks: ", taskService.getAllTasks());
-console.info("Tasks Assigned to: ", user1.name, "-", taskService.getTaskByID(user1.id));
+var manager = new TaskManager();
+// CREATE
+var task1 = manager.createTask("Study TypeScript", "Finish CRUD operations");
+console.log("Created:", task1);
+// READ
+console.log("All Tasks:", manager.getAllTasks());
+console.log("Get by ID (1):", manager.getTaskById(1));
+// UPDATE
+var updated = manager.updateTask(1, { completed: true });
+console.log("Updated:", updated);
+// DELETE
+var isDeleted = manager.deleteTask(1);
+console.log("Deleted:", isDeleted);
+console.log("All Tasks after delete:", manager.getAllTasks());
