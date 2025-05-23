@@ -4,7 +4,15 @@ interface User {
     email: string;
   }
   let users: User[] = [];
-  function createUser(user: User): void {
+  function createUser():void {
+    const idInput = document.getElementById('userId') as HTMLInputElement;
+    const nameInput = document.getElementById('userName') as HTMLInputElement;
+    const emailInput = document.getElementById('userEmail') as HTMLInputElement;
+
+    const id = parseInt(idInput.value);
+    const name = nameInput.value;
+    const email = emailInput.value;
+    const user: User = { id, name, email };
     users.push(user);
     console.log("User created:", user);
   }
@@ -13,9 +21,19 @@ interface User {
   }
   
   function getAllUsers(): User[] {
+    document.getElementById('getallUsers');
+    console.log(users);
     return users;
+    
   }
-  function updateUser(id: number, updatedFields: Partial<User>): void {
+  function updateUser( updatedFields: Partial<User>): void {
+    const idInput = document.getElementById('userId') as HTMLInputElement;
+    const nameInput = document.getElementById('userName') as HTMLInputElement;
+      const emailInput = document.getElementById('userEmail') as HTMLInputElement;
+  
+      const id = parseInt(idInput.value);
+      const name = nameInput.value;
+      const email = emailInput.value;
     const user = users.find(user => user.id === id);
     if (user) {
       Object.assign(user, updatedFields);
@@ -24,12 +42,20 @@ interface User {
       console.log("User not found");
     }
   }
-  function deleteUser(id: number): void {
+  function deleteUser(): void {
+    const idInput = document.getElementById('userId') as HTMLInputElement;
+  const nameInput = document.getElementById('userName') as HTMLInputElement;
+    const emailInput = document.getElementById('userEmail') as HTMLInputElement;
+
+    const id = parseInt(idInput.value);
+    const name = nameInput.value;
+    const email = emailInput.value;
+    const user: User = { id,name, email };
     users = users.filter(user => user.id !== id);
     console.log("User deleted:", id);
   }
-createUser({ id: 1, name: "Pius", email: "pius@example.com" });
-createUser({ id: 2, name: "Brian", email: "brian@example.com" });
+// createUser({ id: 1, name: "Pius", email: "pius@example.com" });
+// createUser({ id: 2, name: "Brian", email: "brian@example.com" });
 
 // console.log(getUserById(1));
 // console.log(getAllUsers());
@@ -43,15 +69,21 @@ interface Task {
     title: string;
   }
   let tasks: Task[] = [];
-  function createTask(id:number,title: string): Task {
-    const newTask: Task = {
-      id, 
-      title,
-    };
+  function createTask():void{
+    document.getElementById('createTaskBtn')?.addEventListener('click', createTask);
+    const idInput = document.getElementById('taskId') as HTMLInputElement;
+    const nameInput = document.getElementById('taskTitle') as HTMLInputElement;
+
+    const id = parseInt(idInput.value);
+    const title = nameInput.value;
+    const newTask: Task = {id, title,}; 
     tasks.push(newTask);
-    return newTask;
+    console.log("User created:", newTask);
+    //return newTask;
   }
   function getAllTasks(): Task[] {
+    document.getElementById('getalltasks');
+    console.log(tasks);
     return tasks;
   }
   
@@ -66,12 +98,20 @@ interface Task {
     }
     return null;
   }
-  function deleteTask(id: number): void {
+  function deleteTask(): void {
+    document.getElementById('deleteTaskBtn')?.addEventListener('click', createTask);
+    const idInput = document.getElementById('taskId') as HTMLInputElement;
+    const nameInput = document.getElementById('taskTitle') as HTMLInputElement;
+
+    const id = parseInt(idInput.value);
+    const title = nameInput.value;
+    const newTask: Task = {id, title,}; 
     const index = tasks.findIndex(task => task.id === id);
       tasks.splice(index, 1);
+      console.log("User deleted:", id);
   }
-  const task1 = createTask(1,"analyze data");
-  const task2 = createTask(2,"clean data");
+  // const task1 = createTask(1,"analyze data");
+  // const task2 = createTask(2,"clean data");
   
   console.log(getAllTasks());
   
@@ -79,19 +119,24 @@ interface Task {
   // const deleted = deleteTask(task2.id);
    console.log(getAllTasks());
 
-   //ASSIGHNING TASK
+   //ASSIGNING TASK
    class TaskAssigner {
     private assignments: Map<number, number[]> = new Map(); 
-    // Map<userId, array of taskIds>
-  
-    assignTaskToUser(userId: number, taskId: number): void {
+    
+    assignTaskToUser(): void {
+    //document.getElementById('assignTaskBtn');
+    const idtask = document.getElementById('assignTaskId') as HTMLInputElement;
+    const iduser = document.getElementById('assignUserId') as HTMLInputElement;
+
+    const userId = parseInt(idtask.value);
+    const taskId = parseInt(iduser.value);
       if (!getUserById(userId)) {
         console.log(`User with id ${userId} does not exist.`);
-        return;
+        
       }
       if (!getTaskById(taskId)) {
         console.log(`Task with id ${taskId} does not exist.`);
-        return;
+        
       }
       const userTasks = this.assignments.get(userId) || [];
       if (!userTasks.includes(taskId)) {
@@ -109,7 +154,12 @@ interface Task {
       return taskIds.map(id => getTaskById(id)!).filter(task => task !== undefined);
     }
   
-    unassignTaskFromUser(userId: number, taskId: number): void {
+    unassignTaskFromUser(): void {
+      const idtask = document.getElementById('assignTaskId') as HTMLInputElement;
+    const iduser = document.getElementById('assignUserId') as HTMLInputElement;
+
+    const userId = parseInt(idtask.value);
+    const taskId = parseInt(iduser.value);
       const userTasks = this.assignments.get(userId);
       if (!userTasks) {
         console.log(`User ${userId} has no tasks assigned.`);
@@ -124,13 +174,15 @@ interface Task {
        }
     }
   }
-  
   const taskAssigner = new TaskAssigner();
+  document.getElementById('assignTaskBtn')?.addEventListener('click', () => taskAssigner.assignTaskToUser());
+  document.getElementById('unassignTaskBtn')?.addEventListener('click', () => taskAssigner.unassignTaskFromUser());
+  
 
-taskAssigner.assignTaskToUser(1, 1);  // Assign task 1 to user 1
-taskAssigner.assignTaskToUser(2, 2);  // Assign task 2 to user 1
+ //taskAssigner.assignTaskToUser();  // Assign task 1 to user 1
+// taskAssigner.assignTaskToUser(2, 2);  // Assign task 2 to user 1
 
-console.log(taskAssigner.getTasksForUser(1)); // List tasks assigned to user 1
+// console.log(taskAssigner.getTasksForUser(1)); // List tasks assigned to user 1
 
-taskAssigner.unassignTaskFromUser(1, 2); // Remove task 2 from user 1
-console.log(taskAssigner.getTasksForUser(1)); // Check tasks again
+// taskAssigner.unassignTaskFromUser(1, 2); // Remove task 2 from user 1
+// console.log(taskAssigner.getTasksForUser(1)); // Check tasks again

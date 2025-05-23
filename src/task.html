@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> Task Management</title>
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+        }
+        .container{
+            background-color: rgb(17, 17, 48);
+            color: white;
+            width: 400px;
+            
+        }
+        .header{
+            display: flex;
+            justify-content: center;
+        }
+        .userman{
+            margin-left: 50px; 
+            margin-bottom: 50px;
+            margin-right: 50px;
+            margin-top: 20px;
+        }
+        .taskman{
+            margin-left: 50px; 
+            margin-bottom: 50px;
+            margin-right: 50px;
+            margin-top: 20px;
+        }
+        button{
+            background-color: blue;
+            color: white;
+            padding: 10px;
+        }
+        input{
+            width: 200px;
+            height: 25px;
+            margin-bottom: 7px;
+        }
+        
+
+    </style>
+  </head>
+  <body>
+    
+    <div class="container">
+      <div class="header"><h1>Task Manager</h1></div>
+
+      <!-- User Management for CRUD -->
+      <div class="userman">
+        <h2>User Management</h2>
+        <div class="form-group">
+          <input type="number" id="userId" placeholder="User ID" /><br>
+          <input type="text" id="userName" placeholder="Name" /><br>
+          <input type="email" id="userEmail" placeholder="Email" /><br><br>
+          <button onclick="createUser()" id= "createUserBtn">Create User</button>
+          <button id="updateUserBtn" onclick="updateUser()" style="margin-left: 10px;">Update User</button><br>
+          <button id="deleteUserBtn" onclick="deleteUser()" >Delete User</button>
+          <button id="getallUsers" onclick="getAllUsers()" style="margin-left: 10px;">get all users</button>
+        </div>
+        <div id="usersList" class="list-container"></div>
+      </div>
+
+      <!-- Task Management for creation deletion and assigning of tasks -->
+      <div class="taskman">
+        <h2>Task Management</h2>
+        <div class="task-CD">
+          <input type="number" id="taskId" placeholder="Task ID" /><br>
+          <input type="text" id="taskTitle" placeholder="Title" /><br><br>
+          <button id="createTaskBtn" onclick="createTask()">Create Task</button>
+          <button id="deleteTaskBtn" onclick="deleteTask()">Delete Task</button><br>
+          <button id="getalltasks" onclick="getAllTasks()" style="width: 200px;margin-bottom: 20px;">get all tasks</button>
+        </div>
+        <div class="taskassign">
+          <input type="number" id="assignTaskId" placeholder="Task ID" /><br>
+          <input type="number" id="assignUserId" placeholder="User ID" /><br><br>
+          <button id="assignTaskBtn" onclick="taskAssigner.assignTaskToUser()">Assign Task</button>
+          <button id="unassignTaskBtn" onclick="taskAssigner.unassignTaskFromUser()">Unassign Task</button>
+        </div>
+        <div id="tasksList" class="list-container"></div>
+      </div>
+    </div>
+
+    <script src="../dist/models.js"></script>
+    
+  </body>
+</html>

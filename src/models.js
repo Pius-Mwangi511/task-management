@@ -1,5 +1,10 @@
 var users = [];
 function createUser(user) {
+    document.getElementById('createUserBtn');
+    // id=document.getElementById('userId').value;
+    // name=document.getElementById('userName').value;
+    // email=document.getElementById('userEmail').value;
+    // user={id,name,email}
     users.push(user);
     console.log("User created:", user);
 }
@@ -10,6 +15,7 @@ function getAllUsers() {
     return users;
 }
 function updateUser(id, updatedFields) {
+    document.getElementById('updateUserBtn');
     var user = users.find(function (user) { return user.id === id; });
     if (user) {
         Object.assign(user, updatedFields);
@@ -20,6 +26,7 @@ function updateUser(id, updatedFields) {
     }
 }
 function deleteUser(id) {
+    document.getElementById('deleteUserBtn');
     users = users.filter(function (user) { return user.id !== id; });
     console.log("User deleted:", id);
 }
